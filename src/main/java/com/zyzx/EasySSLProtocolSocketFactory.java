@@ -108,9 +108,9 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
     /**
      * Constructor for EasySSLProtocolSocketFactory.
      */
-    public EasySSLProtocolSocketFactory(File hostfile) {
+    public EasySSLProtocolSocketFactory(CustomizeNameService ns) {
         super();
-        ns = new CustomizeNameService(hostfile);
+        this.ns = ns;
     }
     
     
@@ -158,6 +158,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
     	            clientHost,
     	            clientPort
     	        );
+    			ns.moveToFirstInetAddress(host, i,ip[i]);
     			 return socket;
     		}catch(Exception e){
     			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
@@ -216,6 +217,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
         	            localAddress,
         	            localPort
         	        );
+        			ns.moveToFirstInetAddress(host, i,ip[i]);
         			 return socket;
         		}catch(Exception e){
         			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
@@ -238,6 +240,7 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
                     SocketAddress remoteaddr = new InetSocketAddress(ip[i], port);
                     socket.bind(localaddr);
                     socket.connect(remoteaddr, timeout);
+                    ns.moveToFirstInetAddress(host, i,ip[i]);
         			 return socket;
         		}catch(Exception e){
         			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
@@ -266,7 +269,8 @@ public class EasySSLProtocolSocketFactory implements SecureProtocolSocketFactory
     	            ip[i],
     	            port
     	        );
-    			 return socket;
+    			ns.moveToFirstInetAddress(host, i,ip[i]);
+    			return socket;
     		}catch(Exception e){
     			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
     		}

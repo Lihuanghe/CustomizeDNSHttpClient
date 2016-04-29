@@ -16,9 +16,9 @@ public class CustmizeHttpProtocolSocketFactory extends DefaultProtocolSocketFact
 	private static final Log LOG = LogFactory.getLog(CustmizeHttpProtocolSocketFactory.class);
 	private CustomizeNameService ns = null;
 
-	public CustmizeHttpProtocolSocketFactory(File hostfile) {
+	public CustmizeHttpProtocolSocketFactory(CustomizeNameService ns) {
 		super();
-		ns = new CustomizeNameService(hostfile);
+		this.ns = ns;
 	}
 
 	@Override
@@ -33,7 +33,8 @@ public class CustmizeHttpProtocolSocketFactory extends DefaultProtocolSocketFact
     			}
     			
     			Socket socket =	new Socket(ip[i], port, local, localport);
-    			 return socket;
+    			ns.moveToFirstInetAddress(host, i,ip[i]);
+    			return socket;
     		}catch(Exception e){
     			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
     		}
@@ -52,6 +53,7 @@ public class CustmizeHttpProtocolSocketFactory extends DefaultProtocolSocketFact
     				LOG.debug("createSocket to "+ip[i].toString());
     			}
     			Socket socket =	new Socket(ip[i], port);
+    			ns.moveToFirstInetAddress(host, i,ip[i]);
     			 return socket;
     		}catch(Exception e){
     			LOG.warn("createSocket to "+ip[i].toString()+" failed .try another Address");
