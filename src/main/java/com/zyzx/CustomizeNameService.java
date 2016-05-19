@@ -24,6 +24,8 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.junit.Test;
+
+import sun.net.util.IPAddressUtil;
 public class CustomizeNameService  {
 	private static final Log LOG = LogFactory.getLog(CustomizeNameService.class);
 	private Map<String,InetAddress[]> map = new ConcurrentHashMap<String,InetAddress[]>();
@@ -42,7 +44,20 @@ public class CustomizeNameService  {
 		if(host==null ||"".equals(host)) return null;
 		InetAddress[] t = map.get(host);
 		if(t== null || t.length ==0){
-			return InetAddress.getAllByName(host);
+			byte[] arrayOfByte = IPAddressUtil.textToNumericFormatV4(host);
+			if (arrayOfByte == null) {
+				arrayOfByte = IPAddressUtil.textToNumericFormatV6(host);
+			}
+			if(arrayOfByte != null){
+				//如果host本身就是个ip地址，设置InetAddress的hostName为空字符串，不可以设置成null,否则会
+				//在jdk8以前，使用SSL会有问题 :http://mail-archives.apache.org/mod_mbox/jmeter-dev/201408.mbox/%3CCAH9fUpaW35vJXPAdRHpb7EHP_B=3Aeo-N+EGM01pqLuJTqzWmQ@mail.gmail.com%3E
+				//当host为null时，SSL的Handshaker在调用getHostSE()时，在window上会调用InetAddress.getHostName()进行域名反解析，造成程序挂起10s钟。
+				//
+				return new  InetAddress[]{InetAddress.getByAddress(host, arrayOfByte)};
+			}else{
+				return InetAddress.getAllByName(host);
+			}
+			
 		}
 		return t;
 	}
@@ -119,8 +134,12 @@ public class CustomizeNameService  {
 			for(int i = 0;i<ipArr.length;i++){
 				try{
 					if(ipArr[i] == null || "".equals(ipArr[i].trim())) continue;
-				
-					InetAddress ip = InetAddress.getByName(ipArr[i]);
+					
+					byte[] arrayOfByte = IPAddressUtil.textToNumericFormatV4(ipArr[i]);
+					if (arrayOfByte == null) {
+						arrayOfByte = IPAddressUtil.textToNumericFormatV6(ipArr[i]);
+					}
+					InetAddress ip = InetAddress.getByAddress(host, arrayOfByte);
 					inetAddr.add(ip);
 				}catch(Exception e){
 					LOG.warn("not a IpAddress :" + ipArr[i]);
