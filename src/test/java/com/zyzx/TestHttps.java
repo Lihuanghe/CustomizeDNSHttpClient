@@ -28,9 +28,9 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 public class TestHttps {
-	private static final String uri = "https://www.baidu.com";
+	private static final String uri = "https://www.baidu.com/a/c/e";
 
-	private static final CustomizeNameService ns = new CustomizeNameService(new File(CustomizeNameService.class.getResource("/hosts.properties").getFile()));
+	private static final CustomizeNameService ns = new CustomizeNameService(new File(TestHttps.class.getResource("/hosts.properties").getFile()));
 	static {
 		// httpclient3 这样使用
 		Protocol.registerProtocol("https", new Protocol("https", (ProtocolSocketFactory) new EasySSLProtocolSocketFactory(ns), 443));

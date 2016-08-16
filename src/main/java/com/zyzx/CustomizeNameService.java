@@ -1,9 +1,8 @@
 package com.zyzx;
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -38,6 +37,22 @@ public class CustomizeNameService  {
 			
 		}
 	}
+	
+	/**
+	 *接受一个inputstream参数，此方法不支持监听文件，无法实时刷新缓存 
+	 * 
+	 **/
+	public CustomizeNameService(InputStream in )  {
+		try {
+			Properties t = new Properties();
+			t.load(in);
+			loadhost(t);
+		
+		} catch (Exception e) {
+			
+		}
+	}
+	
 	public InetAddress[] lookupAllHostAddr(String host) throws UnknownHostException {
 		if(host==null ||"".equals(host)) return null;
 		InetAddress[] t = map.get(host);
@@ -117,7 +132,7 @@ public class CustomizeNameService  {
 		fm.start();
 	}
 	
-	private void loadhost(Properties prop){
+	public void loadhost(Properties prop){
 		Map.Entry<Object,Object> item = null;
 		if(prop == null) return;
 		
