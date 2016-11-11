@@ -28,7 +28,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 public class TestHttps {
-	private static final String uri = "https://www.baidu.com/a/c/e";
+	private static final String uri = "http://www.baidu.com/a/c/e";
 
 	private static final CustomizeNameService ns = new CustomizeNameService(new File(TestHttps.class.getResource("/hosts.properties").getFile()));
 	static {
@@ -42,7 +42,8 @@ public class TestHttps {
 		// httpClient3.1版本：
 		long start = System.currentTimeMillis();
 		HttpClient httpclient = new HttpClient();
-		for (int i = 0; i < 10; i++) {
+		httpclient.setConnectionTimeout(1000);
+		for (int i = 0; i < 1; i++) {
 			
 			GetMethod get = new GetMethod(uri);
 			try {
@@ -58,7 +59,7 @@ public class TestHttps {
 		System.out.println(end - start);
 	}
 
-	@Test
+	
 	public void testhttpclient42() throws Exception {
 		ClientConnectionManager cm = new PoolingClientConnectionManager() {
 			@Override
